@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學務處生活教育組 業務專屬平台</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+
+    <!-- 頂部導航列 -->
+    <header class="bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- 標誌區 -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchNav('promo')">
+                    <div class="bg-blue-600/80 p-2 rounded-xl border border-blue-400/30 shadow-inner">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-amber-300"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-base sm:text-lg font-bold tracking-wide">學務處生活教育組</h1>
+                            <span class="text-[10px] bg-blue-700 text-blue-200 border border-blue-500/30 px-2 py-0.5 rounded-full font-semibold">業務專區</span>
+                        </div>
+                        <p class="text-[11px] text-blue-200 hidden sm:block">宣導專區・導護輪值・遺失物協尋・表單下載・即時通報</p>
+                    </div>
+                </div>
+
+                <!-- 5大功能導航按鈕 -->
+                <nav class="flex space-x-1 sm:space-x-1.5 overflow-x-auto py-1">
+                    <button onclick="switchNav('promo')" id="btn-promo" class="nav-item active px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-blue-800 text-white shadow-sm">
+                        <i data-lucide="megaphone" class="w-4 h-4"></i><span>宣導專區</span>
+                    </button>
+                    <button onclick="switchNav('duty')" id="btn-duty" class="nav-item px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-blue-100 hover:bg-blue-800/60 hover:text-white transition flex items-center gap-1.5">
+                        <i data-lucide="calendar" class="w-4 h-4"></i><span>導護輪值表</span>
+                    </button>
+                    <button onclick="switchNav('lost')" id="btn-lost" class="nav-item px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-blue-100 hover:bg-blue-800/60 hover:text-white transition flex items-center gap-1.5">
+                        <i data-lucide="package-search" class="w-4 h-4"></i><span>遺失物協尋</span>
+                    </button>
+                    <button onclick="switchNav('forms')" id="btn-forms" class="nav-item px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold text-blue-100 hover:bg-blue-800/60 hover:text-white transition flex items-center gap-1.5">
+                        <i data-lucide="file-down" class="w-4 h-4"></i><span>常用表單下載</span>
+                    </button>
+                    <button onclick="switchNav('report')" id="btn-report" class="nav-item px-3 py-2 rounded-lg text-xs sm:text-sm font-bold bg-amber-400 hover:bg-amber-300 text-slate-900 transition flex items-center gap-1.5 shadow-sm">
+                        <i data-lucide="bell-plus" class="w-4 h-4"></i><span>即時通報</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- ==================== 1. 宣導專區（可上傳圖片 / 新增影片連結） ==================== -->
+        <section id="promo" class="tab-panel active space-y-6">
+            <!-- 宣導管理控制列 -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="megaphone" class="w-6 h-6 text-blue-600"></i> 生活教育宣導專區
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">宣導海報圖片展示、宣導教育影片連結與主題重點。</p>
+                </div>
+                <!-- 新增宣導項目按鈕 -->
+                <button onclick="togglePromoModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> 新增宣導內容 (圖片/影片)
+                </button>
+            </div>
+
+            <!-- 宣導內容展示網格 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="promoContainer">
+                <!-- 預設項目 1: 交通安全宣導 (附圖片展示) -->
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="relative h-48 bg-slate-100 overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80" alt="交通安全" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <span class="absolute top-3 left-3 bg-blue-600/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow">圖片宣導</span>
+                        </div>
+                        <div class="p-5 space-y-2">
+                            <div class="text-[11px] text-slate-400">發布日期：2026/09/01</div>
+                            <h3 class="font-bold text-slate-900 text-base">通學步道行走安全與家長接送區指引</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                上放學請走行人穿越道，並依照導護老師及志工指揮。家長開車接送請善用側門臨停接送區，校門口紅線嚴禁併排停車。
+                            </p>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0">
+                        <a href="https://168.motc.gov.tw/" target="_blank" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1">
+                            檢視交通安全宣導海報 <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 預設項目 2: 反霸凌宣導 (附影片連結) -->
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="relative h-48 bg-slate-900 flex items-center justify-center overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80" alt="反霸凌" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-12 h-12 bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+                                    <i data-lucide="play" class="w-6 h-6 fill-current"></i>
+                                </div>
+                            </div>
+                            <span class="absolute top-3 left-3 bg-rose-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow">宣導影片</span>
+                        </div>
+                        <div class="p-5 space-y-2">
+                            <div class="text-[11px] text-slate-400">發布日期：2026/09/08</div>
+                            <h3 class="font-bold text-slate-900 text-base">友善校園・防制校園霸凌宣導短片</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                尊重彼此個別差異，拒絕言語、肢體與網路霸凌。遇事件請勇敢發聲，並向導師、生教組或教育部反霸凌專線 1953 反映。
+                            </p>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0">
+                        <a href="https://www.youtube.com/results?search_query=教育部反霸凌宣導" target="_blank" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1">
+                            <i data-lucide="youtube" class="w-4 h-4 text-rose-600"></i> 開啟 YouTube 宣導影片
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 預設項目 3: 國家防災日防震避難 (附演練指引) -->
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="relative h-48 bg-slate-100 overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80" alt="地震演練" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <span class="absolute top-3 left-3 bg-amber-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow">防災演練</span>
+                        </div>
+                        <div class="p-5 space-y-2">
+                            <div class="text-[11px] text-slate-400">發布日期：2026/09/12</div>
+                            <h3 class="font-bold text-slate-900 text-base">國家防災日地震避難「趴下、掩護、穩住」三步驟</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                警報響起時請立即就地找尋掩蔽，保護頭頸部；搖晃停止後依照指定疏散路線至操場集合點名。
+                            </p>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0">
+                        <a href="https://www.youtube.com/results?search_query=地震避難三步驟" target="_blank" class="w-full py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1">
+                            <i data-lucide="video" class="w-4 h-4 text-amber-600"></i> 觀看防震疏散示範影片
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 2. 導護輪值表 ==================== -->
+        <section id="duty" class="tab-panel space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="calendar-check" class="w-6 h-6 text-blue-600"></i> 全校教師導護輪值表
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">執勤時間：晨間 07:20 - 07:50 ｜ 放學 16:00 - 16:30（週三 12:40 - 13:10）</p>
+                    </div>
+
+                    <div class="relative w-full md:w-72">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                        <input type="text" id="dutySearchInput" onkeyup="searchDuty()" placeholder="搜尋教師姓名、哨位或週次..." class="w-full pl-9 pr-3 py-2 text-xs border rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- 導護輪值表格 -->
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs sm:text-sm text-slate-700" id="dutyTable">
+                        <thead class="bg-slate-100 text-slate-900 text-xs font-bold uppercase tracking-wider">
+                            <tr>
+                                <th class="p-3.5">週次</th>
+                                <th class="p-3.5">日期區間</th>
+                                <th class="p-3.5">總導護</th>
+                                <th class="p-3.5">正門交通哨</th>
+                                <th class="p-3.5">側門接送哨</th>
+                                <th class="p-3.5">後門維護哨</th>
+                                <th class="p-3.5 text-center">狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="dutyTableBody">
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold text-slate-900">第 1 週</td>
+                                <td class="p-3.5 text-xs text-slate-500">08/30 - 09/03</td>
+                                <td class="p-3.5 font-semibold text-blue-700">王大明</td>
+                                <td class="p-3.5">李小華</td>
+                                <td class="p-3.5">張志豪</td>
+                                <td class="p-3.5">劉雅婷</td>
+                                <td class="p-3.5 text-center"><span class="text-xs text-slate-400">已結束</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold text-slate-900">第 2 週</td>
+                                <td class="p-3.5 text-xs text-slate-500">09/06 - 09/10</td>
+                                <td class="p-3.5 font-semibold text-blue-700">陳怡君</td>
+                                <td class="p-3.5">林建國</td>
+                                <td class="p-3.5">許文心</td>
+                                <td class="p-3.5">鄭宇翔</td>
+                                <td class="p-3.5 text-center"><span class="text-xs text-slate-400">已結束</span></td>
+                            </tr>
+                            <tr class="hover:bg-blue-50/60 bg-blue-50/40 border-l-4 border-l-blue-600">
+                                <td class="p-3.5 font-bold text-blue-900 flex items-center gap-1.5">
+                                    第 3 週 <span class="bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">本週</span>
+                                </td>
+                                <td class="p-3.5 text-xs text-slate-600 font-medium">09/13 - 09/17</td>
+                                <td class="p-3.5 font-bold text-blue-800">柯平安</td>
+                                <td class="p-3.5 font-medium">陳素芬</td>
+                                <td class="p-3.5 font-medium">林志偉</td>
+                                <td class="p-3.5 font-medium">黃雅惠</td>
+                                <td class="p-3.5 text-center"><span class="text-xs text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">值勤中</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold text-slate-900">第 4 週</td>
+                                <td class="p-3.5 text-xs text-slate-500">09/20 - 09/24</td>
+                                <td class="p-3.5 font-semibold text-blue-700">趙美玲</td>
+                                <td class="p-3.5">孫嘉豪</td>
+                                <td class="p-3.5">吳佩珊</td>
+                                <td class="p-3.5">周冠宇</td>
+                                <td class="p-3.5 text-center"><span class="text-xs text-slate-400">未開始</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3.5 font-bold text-slate-900">第 5 週</td>
+                                <td class="p-3.5 text-xs text-slate-500">09/27 - 10/01</td>
+                                <td class="p-3.5 font-semibold text-blue-700">蔡承翰</td>
+                                <td class="p-3.5">謝宛婷</td>
+                                <td class="p-3.5">楊博文</td>
+                                <td class="p-3.5">洪秀芳</td>
+                                <td class="p-3.5 text-center"><span class="text-xs text-slate-400">未開始</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 space-y-1.5">
+                    <p class="font-bold flex items-center gap-1.5"><i data-lucide="info" class="w-4 h-4 text-amber-700"></i> 導護同仁調班與值勤須知：</p>
+                    <p>1. 請值勤同仁穿著反光背心、攜帶口哨與交通指揮旗，並於值勤時間前 5 分鐘抵達崗位。</p>
+                    <p>2. 如遇差假需調換班，請於執勤前 3 日填妥「教師導護調班申請單」送生教組備查。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 3. 遺失物協尋專區（可上傳遺失物照片） ==================== -->
+        <section id="lost" class="tab-panel space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="package-search" class="w-6 h-6 text-blue-600"></i> 校園遺失物協尋公佈欄
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">拾獲物品暫存學務處生教組，失主請於下課時間攜帶學生證前來認領。</p>
+                    </div>
+
+                    <!-- 動作按鈕與篩選 -->
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                        <select id="lostCatSelect" onchange="filterLost()" class="px-3 py-2 text-xs border rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="all">所有類別</option>
+                            <option value="水壺/餐具">水壺 / 餐具</option>
+                            <option value="外套/衣物">外套 / 衣物</option>
+                            <option value="文具/書本">文具 / 書本</option>
+                            <option value="貴重/卡片">貴重物品 / 卡片</option>
+                        </select>
+                        <input type="text" id="lostSearch" onkeyup="filterLost()" placeholder="搜尋物品或地點..." class="px-3 py-2 text-xs border rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <button onclick="toggleLostModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
+                            <i data-lucide="camera" class="w-4 h-4"></i> 登記新拾獲物品 (附照片)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 遺失物卡片網格 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" id="lostGrid">
+                    
+                    <!-- 項目 1 -->
+                    <div class="lost-card bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between" data-category="水壺/餐具" data-name="象印深藍色保溫瓶 體育館 480ml">
+                        <div>
+                            <div class="h-40 bg-slate-200 overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80" alt="保溫瓶" class="w-full h-full object-cover">
+                                <span class="absolute top-2.5 left-2.5 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">水壺/餐具</span>
+                            </div>
+                            <div class="p-4 space-y-1.5">
+                                <div class="text-[11px] text-slate-400">拾獲日期：2026/09/14</div>
+                                <h4 class="font-bold text-slate-900 text-sm">象印深藍色不鏽鋼保溫瓶 (480ml)</h4>
+                                <p class="text-xs text-slate-500">拾獲地點：學生活動中心二樓階梯</p>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">待認領</span>
+                            <span class="text-slate-400 text-[11px]">編號: #L-091401</span>
+                        </div>
+                    </div>
+
+                    <!-- 項目 2 -->
+                    <div class="lost-card bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between" data-category="外套/衣物" data-name="學校冬季運動外套 操場 150號">
+                        <div>
+                            <div class="h-40 bg-slate-200 overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80" alt="外套" class="w-full h-full object-cover">
+                                <span class="absolute top-2.5 left-2.5 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">外套/衣物</span>
+                            </div>
+                            <div class="p-4 space-y-1.5">
+                                <div class="text-[11px] text-slate-400">拾獲日期：2026/09/12</div>
+                                <h4 class="font-bold text-slate-900 text-sm">學校冬季運動外套 (150號/無名)</h4>
+                                <p class="text-xs text-slate-500">拾獲地點：操場單槓區旁長椅</p>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">待認領</span>
+                            <span class="text-slate-400 text-[11px]">編號: #L-091202</span>
+                        </div>
+                    </div>
+
+                    <!-- 項目 3 -->
+                    <div class="lost-card bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between" data-category="文具/書本" data-name="四年級數學課本 透明鉛筆盒 走廊">
+                        <div>
+                            <div class="h-40 bg-slate-200 overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=600&q=80" alt="文具" class="w-full h-full object-cover">
+                                <span class="absolute top-2.5 left-2.5 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">文具/書本</span>
+                            </div>
+                            <div class="p-4 space-y-1.5">
+                                <div class="text-[11px] text-slate-400">拾獲日期：2026/09/10</div>
+                                <h4 class="font-bold text-slate-900 text-sm">四年級數學課本+透明鉛筆盒</h4>
+                                <p class="text-xs text-slate-500">拾獲地點：南棟一樓走廊飲水機旁</p>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-slate-500 font-medium bg-slate-200 px-2 py-0.5 rounded">已領回 (09/11)</span>
+                            <span class="text-slate-400 text-[11px]">編號: #L-091001</span>
+                        </div>
+                    </div>
+
+                    <!-- 項目 4 -->
+                    <div class="lost-card bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between" data-category="貴重/卡片" data-name="小熊造型卡套 數位學生證 磁扣 花園">
+                        <div>
+                            <div class="h-40 bg-slate-200 overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=600&q=80" alt="卡套" class="w-full h-full object-cover">
+                                <span class="absolute top-2.5 left-2.5 bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">貴重/卡片</span>
+                            </div>
+                            <div class="p-4 space-y-1.5">
+                                <div class="text-[11px] text-slate-400">拾獲日期：2026/09/08</div>
+                                <h4 class="font-bold text-slate-900 text-sm">小熊造型卡套 (含學生證+磁扣)</h4>
+                                <p class="text-xs text-slate-500">拾獲地點：中庭花園圓形石椅</p>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
+                            <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">待認領</span>
+                            <span class="text-slate-400 text-[11px]">編號: #L-090805</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 4. 常用表單下載 ==================== -->
+        <section id="forms" class="tab-panel space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="mb-6 pb-4 border-b border-slate-100">
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="file-down" class="w-6 h-6 text-blue-600"></i> 生教組常用業務表單下載專區
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">點擊下載按鈕即可取得表件電子檔（PDF / ODT 格式）。</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 表單 1 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center hover:border-blue-300 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-blue-100 p-2.5 rounded-lg text-blue-700">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">學生事假 / 病假 / 公假申請單</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">請假 3 日以上須送生教組核章</p>
+                            </div>
+                        </div>
+                        <button onclick="downloadMock('學生請假單.pdf')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> 下載
+                        </button>
+                    </div>
+
+                    <!-- 表單 2 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center hover:border-blue-300 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-indigo-100 p-2.5 rounded-lg text-indigo-700">
+                                <i data-lucide="users" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">教師導護調班 / 代理申請單</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">請於值勤前 3 日送交生教組備查</p>
+                            </div>
+                        </div>
+                        <button onclick="downloadMock('導護調班申請單.odt')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> 下載
+                        </button>
+                    </div>
+
+                    <!-- 表單 3 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center hover:border-blue-300 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-emerald-100 p-2.5 rounded-lg text-emerald-700">
+                                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">學生改過銷過 / 服務學習申請表</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">生活常規改善輔導配套表件</p>
+                            </div>
+                        </div>
+                        <button onclick="downloadMock('改過銷過申請表.pdf')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> 下載
+                        </button>
+                    </div>
+
+                    <!-- 表單 4 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center hover:border-blue-300 transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-amber-100 p-2.5 rounded-lg text-amber-700">
+                                <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">校外教學與戶外教育安全自主檢核表</h4>
+                                <p class="text-xs text-slate-400 mt-0.5">行前安全裝備與車輛自主查核</p>
+                            </div>
+                        </div>
+                        <button onclick="downloadMock('校外教學安全檢核表.pdf')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> 下載
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 5. 即時通報（導師/行政線上登錄） ==================== -->
+        <section id="report" class="tab-panel space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                    <div class="bg-amber-100 p-2.5 rounded-xl text-amber-800">
+                        <i data-lucide="bell-ring" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">生活事件與校安即時通報系統</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">供校內教師與導師即時登記違規、同儕衝突或偶發事件，資料將即時彙整至資料庫。</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- 通報填寫表單 -->
+                    <div class="lg:col-span-7">
+                        <form id="reportForm" onsubmit="handleReportSubmit(event)" class="space-y-4 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">發生時間 <span class="text-rose-500">*</span></label>
+                                    <input type="datetime-local" id="repTime" required class="w-full text-xs p-2.5 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">事件類別 <span class="text-rose-500">*</span></label>
+                                    <select id="repCategory" required class="w-full text-xs p-2.5 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                        <option value="一般常規違規">一般常規違規 (無故遲到/服儀/未帶作業)</option>
+                                        <option value="同儕衝突糾紛">同儕言語 / 肢體衝突糾紛</option>
+                                        <option value="意外受傷送醫">校園意外受傷 / 送健康中心</option>
+                                        <option value="疑似霸凌/性平">疑似霸凌 / 性別平等通報事項</option>
+                                        <option value="其他偶發事項">其他校安偶發事項</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">涉事班級 / 座號 / 學生姓名 <span class="text-rose-500">*</span></label>
+                                    <input type="text" id="repStudent" placeholder="例：401班 12號 王小明" required class="w-full text-xs p-2.5 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">填報教職員姓名 <span class="text-rose-500">*</span></label>
+                                    <input type="text" id="repReporter" placeholder="例：柯老師 (導師/科任)" required class="w-full text-xs p-2.5 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">事件經過與目前處置說明 <span class="text-rose-500">*</span></label>
+                                <textarea id="repDetail" rows="3" placeholder="請簡要描述事件經過、目前處置（如已聯絡家長、已送健康中心、已口頭告誡等）..." required class="w-full text-xs p-2.5 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition shadow flex items-center justify-center gap-2">
+                                <i data-lucide="send" class="w-4 h-4"></i> 提交通報至生教組
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 即時通報紀錄清單 -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                                <i data-lucide="history" class="w-4 h-4 text-slate-600"></i> 本機已通報事件紀錄
+                            </h3>
+                            <button onclick="clearReports()" class="text-[11px] text-rose-600 hover:underline">清空紀錄</button>
+                        </div>
+                        <div id="reportListContainer" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                            <!-- JS 動態產生 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 彈跳視窗 1: 新增宣導項目 (圖片/影片) -->
+    <div id="promoModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i> 新增生活教育宣導 (圖片 / 影片)
+                </h3>
+                <button onclick="togglePromoModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="addPromoItem(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">宣導標題 <span class="text-rose-500">*</span></label>
+                    <input type="text" id="pTitle" placeholder="例：校園行路安全宣導" required class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">宣導類型</label>
+                        <select id="pType" class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none">
+                            <option value="海報圖片">圖片宣導</option>
+                            <option value="宣導影片">影片連結</option>
+                            <option value="最新公告">文字主題</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">發布日期</label>
+                        <input type="date" id="pDate" class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">圖片網址 (可留空使用預設圖)</label>
+                    <input type="url" id="pImg" placeholder="https://..." class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">影片連結 (如 YouTube 網址)</label>
+                    <input type="url" id="pVideo" placeholder="https://www.youtube.com/watch?v=..." class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">宣導內文重點</label>
+                    <textarea id="pDesc" rows="3" placeholder="請填寫宣導說明重點..." class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition shadow">
+                    確認新增至宣導專區
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 彈跳視窗 2: 新增拾獲遺失物 (附照片上傳/預覽) -->
+    <div id="lostModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i data-lucide="camera" class="w-5 h-5 text-emerald-600"></i> 登記新拾獲遺失物
+                </h3>
+                <button onclick="toggleLostModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="addLostItem(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">物品名稱與特徵 <span class="text-rose-500">*</span></label>
+                    <input type="text" id="lName" placeholder="例：膳魔師黑色保溫瓶 500ml" required class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">物品類別</label>
+                        <select id="lCat" class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none">
+                            <option value="水壺/餐具">水壺/餐具</option>
+                            <option value="外套/衣物">外套/衣物</option>
+                            <option value="文具/書本">文具/書本</option>
+                            <option value="貴重/卡片">貴重/卡片</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">拾獲日期</label>
+                        <input type="date" id="lDate" class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">拾獲地點 <span class="text-rose-500">*</span></label>
+                    <input type="text" id="lLocation" placeholder="例：操場司令台旁長椅" required class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">物品圖片網址 (可直接貼上圖片連結或留空)</label>
+                    <input type="url" id="lImg" placeholder="https://..." class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white focus:outline-none">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow">
+                    登記並發布至協尋公佈欄
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div>
+                <p class="font-bold text-slate-200">學務處生活教育組 業務專屬平台</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">守護校園安全・深耕品德教育・營造友善校園</p>
+            </div>
+            <div class="text-center sm:text-right">
+                <p>校安緊急電話：(07) 1234-5678 分機 #123</p>
+                <p class="text-[11px] text-slate-500">© 2026 Office of Student Affairs. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript 交互程式碼 -->
+    <script>
+        // 初始化圖示
+        lucide.createIcons();
+
+        // 頁面加載預設初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            // 初始化當前時間
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('repTime').value = now.toISOString().slice(0, 16);
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('pDate').value = todayStr;
+            document.getElementById('lDate').value = todayStr;
+
+            loadReportHistory();
+        });
+
+        // 導航分頁切換
+        function switchNav(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('bg-blue-800', 'text-white');
+                if (!btn.id.includes('report')) {
+                    btn.classList.add('text-blue-100');
+                }
+            });
+
+            const targetPanel = document.getElementById(tabId);
+            const targetBtn = document.getElementById('btn-' + tabId);
+
+            if (targetPanel) targetPanel.classList.add('active');
+            if (targetBtn && !tabId.includes('report')) {
+                targetBtn.classList.add('bg-blue-800', 'text-white');
+                targetBtn.classList.remove('text-blue-100');
+            }
+
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 導護搜尋
+        function searchDuty() {
+            const query = document.getElementById('dutySearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#dutyTableBody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // 遺失物篩選
+        function filterLost() {
+            const cat = document.getElementById('lostCatSelect').value;
+            const query = document.getElementById('lostSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('.lost-card');
+
+            cards.forEach(card => {
+                const cardCat = card.getAttribute('data-category');
+                const cardName = card.getAttribute('data-name').toLowerCase();
+                const matchCat = (cat === 'all' || cardCat === cat);
+                const matchQuery = cardName.includes(query);
+                card.style.display = (matchCat && matchQuery) ? 'flex' : 'none';
+            });
+        }
+
+        // 表單下載提醒
+        function downloadMock(filename) {
+            alert('【檔案下載】已成功下載「' + filename + '」！');
+        }
+
+        // 宣導視窗開關
+        function togglePromoModal() {
+            const modal = document.getElementById('promoModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // 新增宣導項目
+        function addPromoItem(e) {
+            e.preventDefault();
+            const title = document.getElementById('pTitle').value;
+            const type = document.getElementById('pType').value;
+            const date = document.getElementById('pDate').value;
+            const img = document.getElementById('pImg').value || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80';
+            const video = document.getElementById('pVideo').value;
+            const desc = document.getElementById('pDesc').value;
+
+            const container = document.getElementById('promoContainer');
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between';
+            card.innerHTML = `
+                <div>
+                    <div class="relative h-48 bg-slate-100 overflow-hidden">
+                        <img src="${img}" alt="${title}" class="w-full h-full object-cover">
+                        <span class="absolute top-3 left-3 bg-blue-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow">${type}</span>
+                    </div>
+                    <div class="p-5 space-y-2">
+                        <div class="text-[11px] text-slate-400">發布日期：${date}</div>
+                        <h3 class="font-bold text-slate-900 text-base">${title}</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">${desc}</p>
+                    </div>
+                </div>
+                <div class="p-5 pt-0">
+                    ${video ? `<a href="${video}" target="_blank" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl transition flex items-center justify-center gap-1"><i data-lucide="video" class="w-4 h-4"></i> 開啟宣導影片連結</a>` : `<span class="block text-center text-xs text-slate-400 py-2">圖片重點宣導</span>`}
+                </div>
+            `;
+            container.prepend(card);
+            lucide.createIcons();
+            togglePromoModal();
+            e.target.reset();
+            alert('【發布成功】宣導項目已成功新增至宣導專區！');
+        }
+
+        // 遺失物視窗開關
+        function toggleLostModal() {
+            const modal = document.getElementById('lostModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // 新增遺失物
+        function addLostItem(e) {
+            e.preventDefault();
+            const name = document.getElementById('lName').value;
+            const cat = document.getElementById('lCat').value;
+            const date = document.getElementById('lDate').value;
+            const loc = document.getElementById('lLocation').value;
+            const img = document.getElementById('lImg').value || 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80';
+
+            const grid = document.getElementById('lostGrid');
+            const card = document.createElement('div');
+            card.className = 'lost-card bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between';
+            card.setAttribute('data-category', cat);
+            card.setAttribute('data-name', name + ' ' + loc);
+            card.innerHTML = `
+                <div>
+                    <div class="h-40 bg-slate-200 overflow-hidden relative">
+                        <img src="${img}" alt="${name}" class="w-full h-full object-cover">
+                        <span class="absolute top-2.5 left-2.5 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">${cat}</span>
+                    </div>
+                    <div class="p-4 space-y-1.5">
+                        <div class="text-[11px] text-slate-400">拾獲日期：${date}</div>
+                        <h4 class="font-bold text-slate-900 text-sm">${name}</h4>
+                        <p class="text-xs text-slate-500">拾獲地點：${loc}</p>
+                    </div>
+                </div>
+                <div class="p-4 pt-2 border-t border-slate-200 flex justify-between items-center text-xs">
+                    <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">待認領</span>
+                    <span class="text-slate-400 text-[11px]">最新登記</span>
+                </div>
+            `;
+            grid.prepend(card);
+            toggleLostModal();
+            e.target.reset();
+            alert('【登記成功】拾獲物品已發布至協尋專區！');
+        }
+
+        // 即時通報提交
+        function handleReportSubmit(e) {
+            e.preventDefault();
+            const report = {
+                id: Date.now(),
+                time: document.getElementById('repTime').value,
+                category: document.getElementById('repCategory').value,
+                student: document.getElementById('repStudent').value,
+                reporter: document.getElementById('repReporter').value,
+                detail: document.getElementById('repDetail').value
+            };
+
+            let list = JSON.parse(localStorage.getItem('sa_reports') || '[]');
+            list.unshift(report);
+            localStorage.setItem('sa_reports', JSON.stringify(list));
+
+            alert('【通報成功】事件已即時記錄至生教組資料庫！');
+            document.getElementById('reportForm').reset();
+            
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('repTime').value = now.toISOString().slice(0, 16);
+            
+            loadReportHistory();
+        }
+
+        // 載入通報紀錄
+        function loadReportHistory() {
+            const container = document.getElementById('reportListContainer');
+            const list = JSON.parse(localStorage.getItem('sa_reports') || '[]');
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-400">
+                        目前尚無通報紀錄
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = list.map(item => `
+                <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1 hover:border-slate-300 transition">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-slate-900">${item.student}</span>
+                        <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">${item.category}</span>
+                    </div>
+                    <p class="text-slate-600 line-clamp-2">${item.detail}</p>
+                    <div class="flex justify-between items-center text-[10px] text-slate-400 pt-1 border-t border-slate-200">
+                        <span>通報人：${item.reporter}</span>
+                        <span>${item.time.replace('T', ' ')}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 清空通報紀錄
+        function clearReports() {
+            if (confirm('確定要清空所有通報紀錄嗎？')) {
+                localStorage.removeItem('sa_reports');
+                loadReportHistory();
+            }
+        }
+    </script>
+</body>
+</html>
